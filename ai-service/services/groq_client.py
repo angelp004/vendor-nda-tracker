@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 # Load .env
-load_dotenv(dotenv_path=".env")
+load_dotenv()
 
 # Logging setup
 logging.basicConfig(level=logging.INFO)
@@ -15,6 +15,8 @@ class GroqClient:
 
     def __init__(self):
         self.api_key = os.getenv("GROQ_API_KEY")
+        print("API KEY:", self.api_key)
+
 
         if not self.api_key:
             raise ValueError("GROQ_API_KEY not found")
