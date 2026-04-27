@@ -1,19 +1,24 @@
-
 package com.vendor.backend.controller;
 
 import com.vendor.backend.service.AiServiceClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/ai")
 public class AiController {
 
-    @Autowired
-    private AiServiceClient aiServiceClient;
+    private final AiServiceClient aiServiceClient;
 
-    @GetMapping("/describe")
-    public String describe(@RequestParam String text) {
+    public AiController(AiServiceClient aiServiceClient) {
+        this.aiServiceClient = aiServiceClient;
+    }
+
+    @PostMapping("/describe")
+    public String describe(@RequestBody Map<String, String> request) {
+        String text = request.get("text");
         return aiServiceClient.describe(text);
     }
+
 }
