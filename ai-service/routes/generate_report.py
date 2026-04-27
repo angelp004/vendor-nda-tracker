@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from groq import Groq
+from service.cache import r, get_cache_key
 import os
 import json
 from datetime import datetime
@@ -22,6 +23,17 @@ def generate_report():
 
     user_input = data["input"]
 
+    # ✅ CACHE START
+    key = get_cache_key(user_input)
+
+    cached = r.get(key)
+    if cached:
+        return jsonify({
+            "report": json.loads(cached),
+            "cached": True
+        })
+    # ✅ CACHE END
+
     # Load prompt
     prompt = load_prompt().replace("{input}", user_input)
 
@@ -33,7 +45,6 @@ def generate_report():
 
     output = response.choices[0].message.content
 
-  
     output = output.replace("```json", "").replace("```", "").strip()
 
     # Convert to JSON
@@ -45,7 +56,11 @@ def generate_report():
             "raw_output": output
         }), 500
 
+    # ✅ SAVE TO CACHE (15 min = 900 sec)
+    r.setex(key, 900, json.dumps(report))
+
     return jsonify({
         "report": report,
-        "generated_at": datetime.utcnow().isoformat()
+        "generated_at": datetime.utcnow().isoformat(),
+        "cached": False
     })

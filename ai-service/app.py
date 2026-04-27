@@ -6,12 +6,16 @@ from flask import Flask
 import routes.describe
 import routes.recommend
 import routes.generate_report
+import routes.health
+
 
 app = Flask(__name__)
 
 app.register_blueprint(routes.describe.describe_bp)
+
 app.register_blueprint(routes.recommend.recommend_bp)
 app.register_blueprint(routes.generate_report.report_bp)
+app.register_blueprint(routes.health.health_bp)
 
 print(app.url_map)
 
