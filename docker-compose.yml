@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+
+  postgres:
+    image: postgres:15
+    container_name: nda_postgres
+    environment:
+      POSTGRES_DB: nda_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    container_name: nda_redis
+    ports:
+      - "6379:6379"
+
+  backend:
+    build: ./backend
+    container_name: nda_backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - redis
+      - ai-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/nda_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+
+  ai-service:
+    build: ./ai-service
+    container_name: nda_ai
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./ai-service/.env
+    depends_on:
+      - redis
+
+volumes:
+  postgres_data:
