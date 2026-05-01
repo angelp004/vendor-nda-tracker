@@ -38,22 +38,4 @@ def add_security_headers(response):
     response.headers["Server"] = "undisclosed"
     return response
 
-app.register_blueprint(routes.describe.describe_bp)
-app.register_blueprint(routes.recommend.recommend_bp)
-app.register_blueprint(routes.generate_report.report_bp)
-app.register_blueprint(routes.health.health_bp)
-
-@app.route("/")
-def home():
-    return "AI Service Running"
-
-@app.route("/sitemap.xml")
-def sitemap():
-    return "", 200
-
-@app.route("/robots.txt")
-def robots():
-    return "User-agent: *\nDisallow: /", 200, {"Content-Type": "text/plain"}
-
-if __name__ == "__main__":
-    app.run(debug=True)
+app.register_blueprint(routes.des
